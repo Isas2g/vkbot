@@ -24,9 +24,9 @@ let counter = 0;
 setInterval(async () => {
   
   
-  let { items } = await vk.api.newsfeed.get({ filters: 'post', count: 1 });
+  let { items } = await vk.api.newsfeed.get({ filters: 'post', count: 3 });
   let post = items[0];
-  let users = await vk.api.users.get({ user_ids: 'k1pse, isas2g, ed9app' });
+  
 
 
   if (!ids.includes(post.source_id) || commented.includes(post.post_id)) return;
@@ -38,19 +38,30 @@ setInterval(async () => {
   await vk.api.likes.add({ type: 'post', owner_id: post.source_id, item_id: post.post_id });
   await vk.api.wall.createComment({ owner_id: post.source_id, post_id: post.post_id, message });
   
-  let coms = await vk.api.wall.getComments({ owner_id: post.source_id, post_id: post.post_id });
   
-  for (let i = 0; i < users.length; i++) {
-    coms.items.some(async el => {
-      if(el.from_id === users[i].id) {
-        await vk.api.likes.add({ type: 'comment', owner_id: post.source_id, item_id: el.id });
-        console.log(`Лайкнут комментарий с текстом ${el.text}`);
-        return true;
-      }
-    });
-  }
+  
 
   console.log(`> Был оставлен комментарий <<${message}>>`);
   counter++;
   if(counter === 4) counter = 0;
+}, MILLISECONDS);
+
+setInterval(async() => {
+  let { items } = await vk.api.newsfeed.get({ filters: 'post', count: 3 });
+  let posts = items;
+  let users = await vk.api.users.get({ user_ids: 'k1pse, isas2g, ed9app' });
+  
+  for(let j = 0; j < posts.length; j++) {
+    let coms = await vk.api.wall.getComments({ owner_id: posts[j].source_id, post_id: posts[j].post_id });
+    
+    for (let i = 0; i < users.length; i++) {
+      for(let k = 0; k < coms.items.length; k++) {
+        if (coms.items[k].from_id === users[i].id) {
+          await vk.api.likes.add({ type: 'comment', owner_id: posts[j].source_id, item_id: coms.items[k].id });
+          console.log(`Лайкнут комментарий с текстом ${coms.items[k].text}`);
+          break;
+        }
+        }
+      }
+    }
 }, MILLISECONDS);
