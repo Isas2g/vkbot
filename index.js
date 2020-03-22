@@ -1,5 +1,4 @@
 let { VK } = require('vk-io');
-let sample = (array) => array[Math.round(array.length * Math.random())];
 
 let { TOKEN, GROUPS, MESSAGES, MILLISECONDS } = require('./config');
 
