@@ -1,5 +1,3 @@
-
-
 let { VK } = require('vk-io');
 let sample = (array) => array[Math.round(array.length * Math.random())];
 
@@ -60,6 +58,3 @@ setInterval(async () => {
   counter++;
   if(counter === 4) counter = 0;
 }, MILLISECONDS);
-
-
-
