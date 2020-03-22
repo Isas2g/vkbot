@@ -41,11 +41,11 @@ setInterval(async () => {
   let coms = await vk.api.wall.getComments({ owner_id: post.source_id, post_id: post.post_id });
   
   for (let i = 0; i < users.length; i++) {
-    coms.items.forEach(async el => {
+    coms.items.some(async el => {
       if(el.from_id === users[i].id) {
         await vk.api.likes.add({ type: 'comment', owner_id: post.source_id, item_id: el.id });
         console.log(`Лайкнут комментарий с текстом ${el.text}`);
-        return false;
+        return true;
       }
     });
   }
