@@ -17,7 +17,7 @@ let ids = [];
     if (!res || res.type !== 'group') throw new Error('Ссылка должна вести на группу');
 
     return -res.id;
-  }));
+  })).catch(_ => console.log('Promise error'));
 })();
 
 let counter = 0;
@@ -49,9 +49,6 @@ setInterval(async () => {
       }
     });
   }
-  // if (coms.items[0].id === user.)
-  //     await vk.api.likes.add({ type: 'comment', owner_id: post.source_id, item_id: el.id });
-  //     console.log(`Лайкнут комментарий с текстом ${el.text}`););
 
   console.log(`> Был оставлен комментарий <<${message}>>`);
   counter++;
