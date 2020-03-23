@@ -47,9 +47,9 @@ setInterval(async () => {
 }, MILLISECONDS);
 
 setInterval(async() => {
-  let { items } = await vk.api.newsfeed.get({ filters: 'post', count: 3 });
+  let { items } = await vk.api.newsfeed.get({ filters: 'post' });
   let posts = items;
-  let users = await vk.api.users.get({ user_ids: 'k1pse, isas2g, ed9app' });
+  let users = await vk.api.users.get({ user_ids: 'k1pse, isas2g, ed9app, id224715702' });
   
   for(let j = 0; j < posts.length; j++) {
     let coms = await vk.api.wall.getComments({ owner_id: posts[j].source_id, post_id: posts[j].post_id });
