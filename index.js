@@ -1,32 +1,51 @@
 let { VK } = require('vk-io');
 
-let { TOKEN, GROUPS, MESSAGES, MILLISECONDS } = require('./config');
+let { TOKEN, GROUPS, MESSAGES, BOT_ID } = require('./config');
 
 let vk = new VK({
   token: TOKEN,
 });
 
-console.log('> Бот запущен.');
+
+
+
+
+console.log('> Bot started.');
 
 let commented = [];
 let ids = [];
+let groups = '';
 
 (async () => {
+  
+  let user = await vk.api.users.get({ user_ids: BOT_ID });
+  
+  let groups1 = await vk.api.groups.get({ user_id: user[0].id });
+  
+  console.log(groups1);
+  groups1.items.forEach(el => {
+    groups += 'g' + el + ',';
+  });
+  
+})();
+
+
+////Function that checks which groups to check for updates
+async function checkGroups() {
   ids = await Promise.all(GROUPS.map(async (link) => {
     let res = await vk.snippets.resolveResource(link);
     if (!res || res.type !== 'group') throw new Error('Ссылка должна вести на группу');
 
     return -res.id;
   })).catch(_ => console.log('Promise error'));
-})();
+}
 
-let counter = 0;
-setInterval(async () => {
-  
-  
-  let { items } = await vk.api.newsfeed.get({ filters: 'post', count: 3 });
+// Function that comments the newest post in the group
+async function comment() {
+  let { items } = await vk.api.newsfeed.get({ filters: 'post', count: 3, source_ids: 'g193240811, g193222366' });
   let post = items[0];
   
+  let counter = 0;
 
 
   if (!ids.includes(post.source_id) || commented.includes(post.post_id)) return;
@@ -40,14 +59,16 @@ setInterval(async () => {
   
   
   
-
+  console.log(groups);
   console.log(`> Был оставлен комментарий <<${message}>>`);
   counter++;
   if(counter === 4) counter = 0;
-}, MILLISECONDS);
+}
 
-setInterval(async() => {
-  let { items } = await vk.api.newsfeed.get({ filters: 'post' });
+
+// Function that checks last 50 posts' comments and likes comments from defined people
+async function like() {
+  let { items } = await vk.api.newsfeed.get({ filters: 'post', source_ids: 'g193240811, g193222366' });
   let posts = items;
   let users = await vk.api.users.get({ user_ids: 'k1pse, isas2g, ed9app, id224715702' });
   
@@ -63,5 +84,12 @@ setInterval(async() => {
         }
         }
       }
+    
     }
-}, MILLISECONDS);
+}
+
+module.exports = {
+  checkGroups,
+  comment,
+  like
+}
