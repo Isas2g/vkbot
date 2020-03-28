@@ -55,12 +55,11 @@ async function comment() {
   commented.push(post.post_id);
 
   await vk.api.likes.add({ type: 'post', owner_id: post.source_id, item_id: post.post_id });
-  await vk.api.wall.createComment({ owner_id: post.source_id, post_id: post.post_id, message });
+  // await vk.api.wall.createComment({ owner_id: post.source_id, post_id: post.post_id, message });
   
   
   
-  console.log(groups);
-  console.log(`> Был оставлен комментарий <<${message}>>`);
+  // console.log(`> Был оставлен комментарий <<${message}>>`);
   counter++;
   if(counter === 4) counter = 0;
 }
@@ -78,9 +77,12 @@ async function like() {
     for (let i = 0; i < users.length; i++) {
       for(let k = 0; k < coms.items.length; k++) {
         if (coms.items[k].from_id === users[i].id) {
-          await vk.api.likes.add({ type: 'comment', owner_id: posts[j].source_id, item_id: coms.items[k].id });
-          console.log(`Лайкнут комментарий с текстом ${coms.items[k].text}`);
-          break;
+          let isLiked = await vk.api.likes.isLiked({ user_id: users[i].id, owner_id: posts[j].source_id, item_id: coms.items[k].id });
+            if (isLiked.liked !== 0) {
+              await vk.api.likes.add({ type: 'comment', owner_id: posts[j].source_id, item_id: coms.items[k].id });
+              console.log(`Лайкнут комментарий с текстом ${coms.items[k].text}`);
+              break;
+            }
         }
         }
       }

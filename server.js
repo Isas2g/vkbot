@@ -14,7 +14,7 @@ const app = express();
 
 app.listen(PORT, async _ => {
     await checkGroups();
-    // setInterval(comment, MILLISECONDS);
+    setInterval(comment, MILLISECONDS);
     setInterval(like, MILLISECONDS);
 });
 
