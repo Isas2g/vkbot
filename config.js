@@ -5,11 +5,14 @@ let MESSAGES = ['Очень приятно видеть это в своей л�
 let MILLISECONDS = 120000; // обновление новостей в миллисекундах
 let PORT = process.env.PORT || 3000;
 
+let usersToLike = 'k1pse, isas2g, ed9app, id224715702';
+
 module.exports = {
     TOKEN,
     GROUPS,
     MESSAGES,
     MILLISECONDS,
     PORT,
-    BOT_ID
+    BOT_ID,
+    usersToLike
 };
