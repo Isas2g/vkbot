@@ -44,24 +44,8 @@ let ids = [];
 async function comment() {
   let { items } = await vk.api.newsfeed.get({ filters: 'post', count: 3, source_ids: 'g193240811, g193222366' });
   let post = items[0];
-  
-  let counter = 0;
-
-
-  // if (!ids.includes(post.source_id) || commented.includes(post.post_id)) return;
-
-  // let message = MESSAGES[counter];
-
-  // commented.push(post.post_id);
 
   await vk.api.likes.add({ type: 'post', owner_id: post.source_id, item_id: post.post_id });
-  // await vk.api.wall.createComment({ owner_id: post.source_id, post_id: post.post_id, message });
-  
-  
-  
-  // console.log(`> Был оставлен комментарий <<${message}>>`);
-  counter++;
-  if(counter === 4) counter = 0;
 }
 
 
@@ -70,6 +54,8 @@ async function like() {
   let { items } = await vk.api.newsfeed.get({ filters: 'post', source_ids: 'g193240811, g193222366' });
   let posts = items;
   let users = await vk.api.users.get({ user_ids: usersToLike });
+  
+  await vk.api.likes.add({ type: 'post', owner_id: posts[0].source_id, item_id: posts[0].post_id });
   
   for(let j = 0; j < posts.length; j++) {
     let coms = await vk.api.wall.getComments({ owner_id: posts[j].source_id, post_id: posts[j].post_id });
