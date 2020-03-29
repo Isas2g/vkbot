@@ -11,9 +11,6 @@ let vk = new VK({
 
 
 console.log('> Bot started.');
-
-let commented = [];
-let ids = [];
 // let groups = '';
 
 // (async () => {
@@ -39,15 +36,6 @@ let ids = [];
 //     return -res.id;
 //   })).catch(_ => console.log('Promise error'));
 // }
-
-// Function that comments the newest post in the group
-async function comment() {
-  let { items } = await vk.api.newsfeed.get({ filters: 'post', count: 3, source_ids: 'g193240811, g193222366' });
-  let post = items[0];
-
-  await vk.api.likes.add({ type: 'post', owner_id: post.source_id, item_id: post.post_id });
-}
-
 
 // Function that checks last 50 posts' comments and likes comments from defined people
 async function like() {
@@ -77,7 +65,5 @@ async function like() {
 }
 
 module.exports = {
-  // checkGroups,
-  comment,
   like
 }
