@@ -1,6 +1,6 @@
 let { VK } = require('vk-io');
 
-let { TOKEN, GROUPS, MESSAGES, BOT_ID, usersToLike } = require('./config');
+let { TOKEN, BOT_ID, usersToLike } = require('./config');
 
 let vk = new VK({
   token: TOKEN,
@@ -11,20 +11,20 @@ let vk = new VK({
 
 
 console.log('> Bot started.');
-// let groups = '';
+let groups = [];
 
-// (async () => {
+(async () => {
   
-//   let user = await vk.api.users.get({ user_ids: BOT_ID });
+  let user = await vk.api.users.get({ user_ids: BOT_ID });
   
-//   let groups1 = await vk.api.groups.get({ user_id: user[0].id });
+  let groups1 = await vk.api.groups.get({ user_id: user[0].id });
   
-  
-//   groups1.items.forEach(el => {
-//     groups += 'g' + el + ',';
-//   });
-  
-// })();
+  groups1.items.forEach(el => {
+    groups.push(el*-1);
+  });
+  console.log(groups1.items);
+})();
+
 
 
 ////Function that checks which groups to check for updates
@@ -37,31 +37,32 @@ console.log('> Bot started.');
 //   })).catch(_ => console.log('Promise error'));
 // }
 
-// Function that checks last 50 posts' comments and likes comments from defined people
+let counter = 0;
+
+// Function that checks last 5 posts' comments and likes comments from defined people
 async function like() {
-  let { items } = await vk.api.newsfeed.get({ filters: 'post', source_ids: 'g193240811, g193222366' });
-  let posts = items;
-  let users = await vk.api.users.get({ user_ids: usersToLike });
-  
-  await vk.api.likes.add({ type: 'post', owner_id: posts[0].source_id, item_id: posts[0].post_id });
-  
+  let users = await vk.api.users.get({ user_ids: usersToLike.split(',')[counter] });
+  console.log(users)
+  counter++;
+  if (counter === usersToLike.split(',').length) counter = 0;
+  for (let p = 0; p < groups.length; p++) {
+    let { items } = await vk.api.wall.get({ count: 10, owner_id: groups[p] });
+    let posts = items;
   for(let j = 0; j < posts.length; j++) {
-    let coms = await vk.api.wall.getComments({ owner_id: posts[j].source_id, post_id: posts[j].post_id });
-    
-    for (let i = 0; i < users.length; i++) {
-      for(let k = 0; k < coms.items.length; k++) {
-        if (coms.items[k].from_id === users[i].id) {
-          let isLiked = await vk.api.likes.isLiked({type: 'comment', user_id: users[i].id, owner_id: posts[j].source_id, item_id: coms.items[k].id });
-            if (isLiked.liked === 0) {
-              await vk.api.likes.add({ type: 'comment', owner_id: posts[j].source_id, item_id: coms.items[k].id });
-              console.log(`Лайкнут комментарий с текстом ${coms.items[k].text}`);
-              break;
-            } else break;
-        }
-        }
-      }
-    
+    if (j <= 2){
+      await vk.api.likes.add({ type: 'post', owner_id:  groups[p], item_id: posts[j].id });
     }
+    let coms = await vk.api.wall.getComments({ owner_id:  groups[p], post_id: posts[j].id });
+    
+      for(let k = 0; k < coms.items.length; k++) {
+        if (coms.items[k].from_id === users[0].id) {
+            await vk.api.likes.add({ type: 'comment', owner_id:  groups[p], item_id: coms.items[k].id });
+            console.log(`Лайкнут комментарий с текстом ${coms.items[k].text}`);
+            break;
+          }
+        }
+    }
+  }
 }
 
 module.exports = {

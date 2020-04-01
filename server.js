@@ -1,5 +1,4 @@
 const express = require('express');
-let { VK } = require('vk-io');
 
 let { MILLISECONDS } = require('./config');
 
@@ -10,9 +9,7 @@ const { like } = require('./index.js');
 
 const app = express();
 
-
-
-app.listen(PORT, async _ => {
+app.listen(PORT, _ => {
     setInterval(like, MILLISECONDS);
 });
 
