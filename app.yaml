@@ -1,0 +1,6 @@
+runtime: node.js
+env: standart
+entrypoint: npm start
+
+runtime_config:
+    node_version: 10.16.0
